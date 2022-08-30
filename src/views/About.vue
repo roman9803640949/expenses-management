@@ -29,17 +29,12 @@
           <v-expansion-panel>
             <v-expansion-panel-header>
               <v-row>
-                <v-col md="6">
+                <v-col md="3">
                   {{ cat.title }}
                 </v-col>
-                <v-col md="6">
-                  <v-chip
-                    class="mx-2"
-                    color="green"
-                    small
-                    text-color="white"
-                  >
-                   RS  {{cat.total}}
+                <v-col md="9">
+                  <v-chip class="mx-2" color="green" small text-color="white">
+                    RS {{ cat.total || 0 }}
                   </v-chip>
                   <v-btn
                     small
@@ -176,7 +171,10 @@ export default {
         return {
           ...cat,
           sub_categories: this.new_sub_categories[cat.id],
-          total: this.new_sub_categories[cat.id].reduce((a,b)=> ~~a + ~~b.price,0),
+          total: this.new_sub_categories[cat.id]?.reduce(
+            (a, b) => ~~a + ~~b.price,
+            0
+          ),
         };
       });
     },
@@ -185,14 +183,14 @@ export default {
       return this.$store.getters.sub_categories;
     },
     new_sub_categories() {
-      return this.sub_categories.reduce((acc, obj) => {
-      const key = obj['category_id'];
-      if (!acc[key]) {
-         acc[key] = [];
-      }
-      acc[key].push(obj);
-      return acc;
-   }, {});
+      return this.sub_categories?.reduce((acc, obj) => {
+        const key = obj["category_id"];
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(obj);
+        return acc;
+      }, {});
     },
   },
 };
