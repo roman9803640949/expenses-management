@@ -26,6 +26,7 @@ function getDefaultState() {
     user: null,
     categories: [],
     sub_categories: [],
+    budget: [],
   };
 }
 
@@ -58,6 +59,17 @@ export default new Vuex.Store({
         user_id: state.user.uid,
         price: payload.data().price,
         category_id: payload.data().category_id,
+        date: payload.data().date,
+      });
+    },
+
+    setBudget(state, payload) {
+      state.budget.push({
+        title: payload.data().title,
+        amount: payload.data().amount,
+        rem_amount: payload.data().rem_amount,
+        user_id: state.user.uid,
+        date: payload.data().date,
       });
     },
 
@@ -67,6 +79,10 @@ export default new Vuex.Store({
 
     addSubCategory(state, payload) {
       state.sub_categories.push(payload);
+    },
+
+    addBudget(state, payload) {
+      state.budget.push(payload);
     },
 
     deleteSubCategory(state, payload) {
@@ -90,6 +106,10 @@ export default new Vuex.Store({
 
     sub_categories(state) {
       return state.sub_categories;
+    },
+
+    budget(state) {
+      return state.budget;
     },
   },
 
@@ -152,6 +172,15 @@ export default new Vuex.Store({
       });
     },
 
+    async getBudget({ commit, state }) {
+      const categories = collection(db, "budget");
+      const q = query(categories, where("user_id", "==", state.user.uid));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        commit("setBudget", doc);
+      });
+    },
+
     async addCategory({ commit }, payload) {
       await addDoc(collection(db, "category"), {
         title: payload.title,
@@ -186,7 +215,7 @@ export default new Vuex.Store({
         rem_amount: payload.amount,
       });
 
-      commit();
+      commit("addBudget", payload);
     },
 
     async deleteSubCategory({ commit }, payload) {

@@ -26,7 +26,7 @@
             ref="menu"
             v-model="menu"
             :close-on-content-click="false"
-            :return-value.sync="date"
+            :return-value.sync="budgetData.date"
             transition="scale-transition"
             offset-y
             max-width="290px"
@@ -50,7 +50,11 @@
             >
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
-              <v-btn text color="primary" @click="$refs.menu.save(date)">
+              <v-btn
+                text
+                color="primary"
+                @click="$refs.menu.save(budgetData.date)"
+              >
                 OK
               </v-btn>
             </v-date-picker>

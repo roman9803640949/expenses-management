@@ -1,6 +1,8 @@
 <template>
   <div class="about">
     <v-row justify="end">
+      <v-col md="4"> </v-col>
+
       <v-col md="2">
         <v-btn
           large
@@ -22,6 +24,40 @@
           >Add Budget</v-btn
         >
       </v-col>
+      <v-col md="5">
+        <v-menu
+          ref="menu"
+          v-model="menu"
+          :close-on-content-click="true"
+          transition="scale-transition"
+          max-width="290px"
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="dateFilter"
+              label="Select the month"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+              outlined
+              dense
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="dateFilter" type="month" class="mt-4">
+            <v-spacer></v-spacer>
+          </v-date-picker> </v-menu
+      ></v-col>
+
+      <v-col md="12">
+        <v-chip small color="success">
+          Budget: Rs {{ budget?.amount || 0 }}
+        </v-chip>
+        <v-chip small color="error"> Used Amount: Rs {{ usedAmount }} </v-chip>
+        <v-chip small color="warning">
+          Remaining Amount: Rs {{ remainingAmount }}
+        </v-chip>
+      </v-col>
     </v-row>
     <v-row>
       <v-col md="4" v-for="(cat, index) in newCategoriesList" :key="index">
@@ -42,6 +78,7 @@
                     color="primary accent-4"
                     class="ml-1"
                     @click="createFund(cat)"
+                    v-if="budget?.amount"
                   >
                     Add Expenses
                   </v-btn>
@@ -79,6 +116,15 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
+
+      <v-col md="12">
+        <Pie
+          :label="categoryChartLabel"
+          :datas="categoryChartData"
+          :colors="getRandomColor"
+          v-if="categoryChartData.length && categoryChartLabel.length"
+        />
+      </v-col>
     </v-row>
 
     <v-dialog v-model="dialog" width="500" persistent>
@@ -107,17 +153,20 @@
 import AddFund from "@/components/AddFund.vue";
 import AddCategory from "@/components/AddCategory.vue";
 import AddBudget from "@/components/AddBudget.vue";
+import Pie from "../components/Pie.vue";
 export default {
   name: "About",
-  components: { AddFund, AddCategory, AddBudget },
+  components: { AddFund, AddCategory, AddBudget, Pie },
 
   data() {
     return {
+      dateFilter: new Date().toISOString().substr(0, 7),
       dialog: false,
       createFundDialog: false,
       createCategoryDialog: false,
       createBudgetDialog: false,
       categoryId: null,
+      menu: false,
     };
   },
 
@@ -166,6 +215,10 @@ export default {
       return this.$store.getters.categories;
     },
 
+    currentDate() {
+      return this.dateFilter;
+    },
+
     newCategoriesList() {
       return [...this.categories].map((cat) => {
         return {
@@ -180,7 +233,9 @@ export default {
     },
 
     sub_categories() {
-      return this.$store.getters.sub_categories;
+      return this.$store.getters.sub_categories.filter(
+        (item) => item.date == this.currentDate
+      );
     },
     new_sub_categories() {
       return this.sub_categories?.reduce((acc, obj) => {
@@ -191,6 +246,43 @@ export default {
         acc[key].push(obj);
         return acc;
       }, {});
+    },
+
+    usedAmount() {
+      return this.sub_categories.reduce((a, b) => ~~a + ~~b.price, 0);
+    },
+
+    remainingAmount() {
+      return ~~this.budget?.amount - ~~this.usedAmount;
+    },
+
+    budget() {
+      return this.$store.getters.budget.filter(
+        (item) => item.date == this.currentDate
+      )[0];
+    },
+
+    categoryChartData() {
+      return this.newCategoriesList.map((item) => item.total);
+    },
+    getRandomColor() {
+      //generates random colours and puts them in string
+      var colors = [];
+      for (var i = 0; i < this.categories.length + 1; i++) {
+        var letters = "0123456789ABCDEF".split("");
+        var color = "#";
+        for (var x = 0; x < 6; x++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        colors.push(color);
+      }
+      colors = colors.slice(0, -1);
+      console.log(colors);
+      return colors;
+    },
+
+    categoryChartLabel() {
+      return this.newCategoriesList.map((item) => item.title);
     },
   },
 };

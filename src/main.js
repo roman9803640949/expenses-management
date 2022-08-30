@@ -22,6 +22,7 @@ new Vue({
         this.$store.dispatch("autoSignIn", user);
         this.$store.dispatch("getCategory");
         this.$store.dispatch("getSubCategory");
+        this.$store.dispatch("getBudget");
       }
     });
   },
