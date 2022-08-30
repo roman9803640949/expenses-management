@@ -53,12 +53,21 @@
                     <tr>
                       <th>Name</th>
                       <th>Price</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="item in cat.sub_categories" :key="item.id">
                       <td class="text-left">{{ item.title }}</td>
                       <td class="text-left">{{ item.price }}</td>
+                      <td class="text-left">
+                        <v-icon
+                          small
+                          color="red"
+                          @click="deleteSubCategory(item)"
+                          >mdi-delete</v-icon
+                        >
+                      </td>
                     </tr>
                   </tbody>
                 </template>
@@ -142,6 +151,10 @@ export default {
     },
     saveandclosebudget() {
       (this.dialog = false), (this.createBudgetDialog = false);
+    },
+
+    deleteSubCategory(item) {
+      this.$store.dispatch("deleteSubCategory", item);
     },
   },
 

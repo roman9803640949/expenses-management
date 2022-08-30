@@ -7,7 +7,15 @@ import {
   signOut,
 } from "firebase/auth";
 
-import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  where,
+  query,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 import { db } from "../firebase";
 
@@ -59,6 +67,15 @@ export default new Vuex.Store({
 
     addSubCategory(state, payload) {
       state.sub_categories.push(payload);
+    },
+
+    deleteSubCategory(state, payload) {
+      let item = state.sub_categories.find((item) => {
+        return item.id === payload.id;
+      });
+
+      let index = state.sub_categories.indexOf(item);
+      state.sub_categories.splice(index, 1);
     },
   },
 
@@ -146,7 +163,7 @@ export default new Vuex.Store({
     },
 
     async addSubCategory({ commit }, payload) {
-      await addDoc(collection(db, "sub_category"), {
+      const data = await addDoc(collection(db, "sub_category"), {
         title: payload.title,
         description: payload.description,
         price: payload.price,
@@ -155,7 +172,9 @@ export default new Vuex.Store({
         category_id: payload.category_id,
       });
 
-      commit("addSubCategory", payload);
+      console.log(data);
+
+      commit("addSubCategory", { ...payload, id: data.id });
     },
 
     async addBudget({ commit }, payload) {
@@ -168,6 +187,11 @@ export default new Vuex.Store({
       });
 
       commit();
+    },
+
+    async deleteSubCategory({ commit }, payload) {
+      await deleteDoc(doc(db, "sub_category", payload.id));
+      commit("deleteSubCategory", payload);
     },
   },
 });
