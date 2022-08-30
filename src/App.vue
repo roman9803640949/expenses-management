@@ -1,27 +1,30 @@
 <template>
   <div id="app">
     <v-app>
-    <v-app-bar app dark>
-      <v-toolbar-title>Fund Tracker</v-toolbar-title>
-      <v-spacer></v-spacer>
-          <v-btn color="dark" class="ml-1" to="/about">
-            Categories
-          </v-btn>
-          <v-btn color="dark" class="ml-1">
-            Report Page
-          </v-btn>
-          <v-btn color="dark" class="ml-1">
-            Logout
-          </v-btn>
-    </v-app-bar>
-    <v-main>
-      <v-container fluid>
-        <router-view/>
-      </v-container>
-    </v-main>
+      <v-app-bar app dark>
+        <v-toolbar-title>Fund Tracker</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn color="dark" class="ml-1" to="/about"> Categories </v-btn>
+        <v-btn color="dark" class="ml-1"> Report Page </v-btn>
+        <v-btn color="dark" class="ml-1"> Logout </v-btn>
+      </v-app-bar>
+      <v-main>
+        <v-container fluid>
+          <router-view />
+        </v-container>
+      </v-main>
     </v-app>
   </div>
 </template>
+
+<script>
+export default {
+  name: "APP",
+  data() {
+    return {};
+  },
+};
+</script>
 
 <style lang="scss">
 #app {
