@@ -1,25 +1,27 @@
 <template>
   <v-card>
-    <v-card-title> Add Expenses </v-card-title>
+    <v-card-title> Add Budget </v-card-title>
     <v-card-text>
-      <v-row>
-        <v-col md="12">
-          <v-text-field label="Title" outlined v-model="title"></v-text-field>
-
+      <v-row no-gutters>
+        <v-col sm="12">
           <v-text-field
-            label="Price"
+            label="Title"
             outlined
+            v-model="budgetData.title"
+          ></v-text-field>
+        </v-col>
+
+        <v-col sm="12">
+          <v-text-field
+            outlined
+            label="price"
             type="number"
             min="0"
-            v-model="price"
+            v-model="budgetData.amount"
           ></v-text-field>
+        </v-col>
 
-          <v-textarea
-            label="Description"
-            v-model="description"
-            outlined
-          ></v-textarea>
-
+        <v-col xs="12">
           <v-menu
             ref="menu"
             v-model="menu"
@@ -32,7 +34,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="date"
+                v-model="budgetData.date"
                 label="Pick a date"
                 readonly
                 v-bind="attrs"
@@ -41,7 +43,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="date"
+              v-model="budgetData.date"
               type="month"
               class="mt-4"
               :min="currentDate"
@@ -68,33 +70,28 @@
 export default {
   name: "AddFund",
 
-  props: ["categoryId"],
+  data() {
+    return {
+      budgetData: {
+        title: "",
+        amount: null,
+        rem_amount: null,
+        user_id: this.$store.getters.user.uid,
+        date: new Date().toISOString().substr(0, 7),
+      },
+      menu: false,
+    };
+  },
 
   methods: {
     close() {
       this.$emit("close");
     },
+
     saveandclose() {
       this.$emit("saveandclose");
-      this.$store.dispatch("addSubCategory", {
-        title: this.title,
-        price: this.price,
-        description: this.description,
-        date: this.date,
-        category_id: this.categoryId,
-        user_id: this.$store.getters.user.uid,
-      });
+      this.$store.dispatch("addBudget", { ...this.budgetData });
     },
-  },
-
-  data() {
-    return {
-      title: "",
-      price: null,
-      description: "",
-      date: new Date().toISOString().substr(0, 7),
-      menu: false,
-    };
   },
 
   computed: {
