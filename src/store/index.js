@@ -1,14 +1,69 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-Vue.use(Vuex)
+import Vue from "vue";
+import Vuex from "vuex";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state: {
-      count: 0
+  state: {
+    user: null,
+  },
+
+  mutations: {
+    setUser(state, payload) {
+      state.user = payload;
     },
-    mutations: {
-      increment (state) {
-        state.count++
-      }
-    }
-  })
+  },
+
+  getters: {
+    user(state) {
+      return state.user;
+    },
+  },
+
+  actions: {
+    signUp({ commit }, payload) {
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, payload.email, payload.password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          commit("setUser", user);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    signIn({ commit }, payload) {
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, payload.email, payload.password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          commit("setUser", user);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    autoSignIn({ commit }, payload) {
+      commit("setUser", payload);
+    },
+
+    logout({ commit }) {
+      const auth = getAuth();
+      signOut(auth)
+        .then(() => {
+          commit("setUser", null);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
+});
