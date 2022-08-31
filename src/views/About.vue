@@ -57,6 +57,10 @@
         <v-chip small color="warning">
           Remaining Amount: Rs {{ remainingAmount }}
         </v-chip>
+        <!-- 
+        <v-chip small color="primary" @click="deleteBudget"
+          >Clear Budget
+        </v-chip> -->
       </v-col>
     </v-row>
     <v-row>
@@ -208,6 +212,10 @@ export default {
     deleteSubCategory(item) {
       this.$store.dispatch("deleteSubCategory", item);
     },
+
+    deleteBudget() {
+      this.$store.dispatch("deleteBudget", this.dateFilter);
+    },
   },
 
   computed: {
@@ -257,9 +265,10 @@ export default {
     },
 
     budget() {
+      let length = this.$store.getters.budget.length - 1;
       return this.$store.getters.budget.filter(
         (item) => item.date == this.currentDate
-      )[0];
+      )[length];
     },
 
     categoryChartData() {

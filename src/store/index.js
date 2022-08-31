@@ -12,6 +12,7 @@ import {
   getDocs,
   addDoc,
   where,
+  deleteField,
   query,
   deleteDoc,
   doc,
@@ -92,6 +93,15 @@ export default new Vuex.Store({
 
       let index = state.sub_categories.indexOf(item);
       state.sub_categories.splice(index, 1);
+    },
+
+    deleteBudget(state, payload) {
+      let item = state.budget.find((item) => {
+        return item.id === payload.id;
+      });
+
+      let index = state.budget.indexOf(item);
+      state.budget.splice(index, 1);
     },
   },
 
@@ -221,6 +231,13 @@ export default new Vuex.Store({
     async deleteSubCategory({ commit }, payload) {
       await deleteDoc(doc(db, "sub_category", payload.id));
       commit("deleteSubCategory", payload);
+    },
+
+    async deleteBudget({ commit }, payload) {
+      commit("deleteBudget", payload);
+      const categories = collection(db, "budget");
+      const q = query(categories, where("date", "==", payload));
+      await deleteField(q);
     },
   },
 });
