@@ -265,10 +265,10 @@ export default {
     },
 
     budget() {
-      let length = this.$store.getters.budget.length - 1;
-      return this.$store.getters.budget.filter(
-        (item) => item.date == this.currentDate
-      )[length];
+      // let length = this.$store.getters.budget.length - 1;
+      let array = this.$store.getters.budget.filter(item=>item.date===this.dateFilter)
+
+      return this.$store.getters.budget.filter(item=>item.date===this.dateFilter)[array.length-1]
     },
 
     categoryChartData() {
